@@ -44,6 +44,7 @@ class Window:
             files = os.listdir(dir)
             for i in range(len(files)):
                 files[i] = dir + files[i]
+
         
         # Load images.
         for f in files:
@@ -121,7 +122,7 @@ class Window:
         if not self.endflag:
             rating = self.rating_field.get()
             # if last picture end programm
-            if self.current_image >= len(self.photo_images):
+            if self.current_image >= (len(self.photo_images) - 1):
                 self.finish_call_back()
             else:
                 # check for correct entry
