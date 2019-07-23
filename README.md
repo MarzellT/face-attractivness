@@ -12,7 +12,7 @@ Now you can `pip install -r requirements.txt` in your virtualenvironment.
 To leave the virtualenvironment simply type `deactivate` or leave your terminal session.     
 
 To use the face rater activate your virtualenvironment if you created one.      
-Then start it with `python3 face_rating.py`.     
+Then start it with `python3 face_rating.py data/raten/*`.     
 You can also run this script using arguments.     
 The only argument available is where your image folder is located at.    
 If you specify the location you can use complete or relative path.       
