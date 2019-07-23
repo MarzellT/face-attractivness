@@ -1,20 +1,47 @@
+""" face_rating.py
+
+This program is used to rate faces in images.
+It will save a csv of first element = file and second elemt = rating 
+after successful run or early aboard.
+
+This program can be run with arguments or without.
+If run without arguments it will search for images in the directory
+of ./data/raten/ . Else you can specify the location of your images.
+"""
+
+import os
 import sys
 from PIL import Image, ImageTk
 import tkinter as tk
 from tkinter import messagebox
 
 class Window:
+    """ face_rating window object.
+
+    Contains all the information of the window.
+    This includes the basic window structure aswell as
+    the rating logic.
+    """
+
     def __init__(self):
+        """ Create the window and setup variables. """
         self.window = tk.Tk()
         self.window.title("Facebewerterer")
         self.window.geometry("500x500")
-        
+
         images = []
         paths = []
-        if len(sys.argv)<2:
-            files = "/data/raten/"
-        else:
+
+        # Choose whether run with arguments or not.
+        if len(sys.argv) > 1:
             files = sys.argv[1:]
+        else:
+            dir ='data/raten/' 
+            files = os.listdir(dir)
+            for i in range(len(files)):
+                files[i] = dir + files[i]
+        
+        # Load images.
         for f in files:
             image = None
             try:
@@ -27,6 +54,8 @@ class Window:
                 image = image.resize((300,300))
                 images.append(image)
 
+
+        # Create tk usable images.
         photo_images = []
         for image in images:
             photo_image = ImageTk.PhotoImage(image)
@@ -49,6 +78,7 @@ class Window:
         self.rating_button.pack()
         self.finish_button.pack()
         
+        # If endflag window gets inactive and csv is created.
         self.endflag = False
         
         self.window.bind('<Return>', self.call_rating_call_back)
@@ -56,30 +86,41 @@ class Window:
 
 
     def wrong_number_call_back(self):
+        """ Create errorbox if number is wrong. """
         messagebox.showerror( "Wrong value error", "Geb eine Zahl zwischen 1 und 10 ein.")
 
     def nan_call_back(self):
+        """ Create errorbox if not a number. """
         messagebox.showerror( "Not a number error", "Geb eine Zahl zwischen 1 und 10 ein.")
 
     def finish_call_back(self):
+        """ Make window inactive and show that program is finished. """
         if not self.endflag:
+
             dank_sagung = ("Vielen Dank für deine Hilfe, du bist großartig!\n" +\
             "Als letzten Schritt bitte ich dich die Datei 'ratings.csv' noch an mich zu schicken.\n" +\
             "Nochmal vielen Dank für deine Zeit.")
             messagebox.showinfo("Vielen Dank!", dank_sagung)
+
+            # save csv
             with open('ratings.csv', 'w') as file:
                 file.write(self.ratings)
+
+            # disable window
             self.rating_button.config(state=tk.DISABLED)
             self.finish_button.config(state=tk.DISABLED)
             self.rating_field.config(state=tk.DISABLED)
             self.endflag = True
 
     def rating_call_back(self):
+        """ Add rating to string and get next picture. """
         if not self.endflag:
             rating = self.rating_field.get()
+            # if last picture end programm
             if self.current_image >= len(self.photo_images):
                 self.finish_call_back()
             else:
+                # check for correct entry
                 if rating.isnumeric():
                     if int(rating) > 0 and int(rating) < 11:
                         self.ratings += self.paths[self.current_image] + ';' + rating + '\n'            
@@ -94,9 +135,11 @@ class Window:
                     self.nan_call_back()
 
     def call_rating_call_back(self, event):
+        """ Wrapper for using <'Return'> """
         self.rating_call_back()
 
 def main():
+    """ Create window. """
     w = Window()
 
 if __name__ == "__main__":
