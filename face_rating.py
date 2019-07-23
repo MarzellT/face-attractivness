@@ -15,34 +15,10 @@ class Window:
         for f in files:
             image = None
             try:
-                path = (f + '/0001_01.jpg')
+                path = (f)
                 image = Image.open(path)
             except Exception:
-                try:
-                    path = (f + '/0002_02.jpg')
-                    image = Image.open(path)
-                except Exception:
-                    try:
-                        path = (f + '/0003_01.jpg')
-                        image = Image.open(path)
-                    except Exception:
-                        try:
-                            path = (f + '/0002_01.jpg')
-                            image = Image.open(path)
-                        except Exception:
-                            try:
-                                path = (f + '/0001_02.jpg')
-                                image = Image.open(path)
-                            except Exception:
-                                try:
-                                    path = (f + '/0017_01.jpg')
-                                    image = Image.open(path)
-                                except Exception:
-                                    try:
-                                        path = (f + '/0017_02.jpg')
-                                        image = Image.open(path)
-                                    except Exception:
-                                        print(f)
+                print(f)
             if image != None:
                 paths.append(path)
                 image = image.resize((300,300))
@@ -77,10 +53,10 @@ class Window:
 
 
     def wrong_number_call_back(self):
-        messagebox.showerror( "Wrong value error", "Geben sie eine Zahl zwischen 1 und 10 ein.")
+        messagebox.showerror( "Wrong value error", "Geb eine Zahl zwischen 1 und 10 ein.")
 
     def nan_call_back(self):
-        messagebox.showerror( "Not a number error", "Geben sie eine Zahl zwischen 1 und 10 ein.")
+        messagebox.showerror( "Not a number error", "Geb eine Zahl zwischen 1 und 10 ein.")
 
     def finish_call_back(self):
         if not self.endflag:
@@ -98,7 +74,7 @@ class Window:
     def rating_call_back(self):
         if not self.endflag:
             rating = self.rating_field.get()
-            if self.current_image >= len(self.photo_images)-1:
+            if self.current_image >= len(self.photo_images):
                 self.finish_call_back()
             else:
                 if rating.isnumeric():
