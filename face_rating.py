@@ -1,3 +1,9 @@
+import os
+import sys
+from PIL import Image, ImageTk
+import tkinter as tk
+from tkinter import messagebox
+
 """ face_rating.py
 
 This program is used to rate faces in images.
@@ -9,11 +15,9 @@ If run without arguments it will search for images in the directory
 of ./data/raten/ . Else you can specify the location of your images.
 """
 
-import os
-import sys
-from PIL import Image, ImageTk
-import tkinter as tk
-from tkinter import messagebox
+__author__ = "Tobias Marzell"
+__credits__ = "Credits to anyone helping me collecting data."
+__email__ = "tobias.marzell@gmail.com"
 
 class Window:
     """ face_rating window object.
