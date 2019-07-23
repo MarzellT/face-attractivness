@@ -40,7 +40,7 @@ class Window:
         if len(sys.argv) > 1:
             files = sys.argv[1:]
         else:
-            dir ='data/raten/' 
+            dir = os.path.normcase('data/raten/')
             files = os.listdir(dir)
             for i in range(len(files)):
                 files[i] = dir + files[i]
