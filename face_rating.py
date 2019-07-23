@@ -8,10 +8,13 @@ class Window:
         self.window = tk.Tk()
         self.window.title("Facebewerterer")
         self.window.geometry("500x500")
-
-        files = sys.argv[1:]
+        
         images = []
         paths = []
+        if len(sys.argv)<2:
+            files = "/data/raten/"
+        else:
+            files = sys.argv[1:]
         for f in files:
             image = None
             try:
