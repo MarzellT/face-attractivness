@@ -8,7 +8,7 @@ You can do that by either using the webclient or through your teminal by typing:
 ### Install Python3🐍
 Go to <https://www.python.org/downloads/windows/>.    
 Download and install the latest version of Python3.   
-Mark `Add Python 3.X to PATH` in the installer.    
+**Mark `☑️Add Python 3.X to PATH` in the installer.**    
 
 ### Install dependencies🤨
 ~~Open cmd (if you don't know how simply open the start menu and search for cmd).
