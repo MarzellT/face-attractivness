@@ -1,6 +1,6 @@
 # Installation:nail_care:
 
-The first thing you need to do is to clone this repository.        
+## -Download this repository.        
 You can do that by either clicking the green button "Clone or download" and then "Download ZIP"
 or through your teminal by typing:       
 `git@github.com:MarzellT/face-attractivness.git`      
