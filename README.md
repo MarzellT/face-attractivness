@@ -13,7 +13,7 @@
 - Download and install the latest version of Python3.   
 1.**Mark _☑️ Add Python 3.X to PATH_ in the installer.**
 ![alt text](https://github.com/MarzellT/face-attractivness/blob/master/install_images/python-install.JPG "Python Install")
-2. Click **Install**
+2. Click **Install Now**
 - Proceed with step **Install dependencies**
 
 ### Install dependencies🤨
@@ -26,8 +26,9 @@ Now type `pip install -r requirements.txt`.~~
 Actually forget that stuff. 
 😅
 I implemented a much simpler feature.
-- Run the `windows_setup` file from this folder.
+- Run the **windows_setup** file from this folder.
 - If a blue screen like this opens click **more Info** and then **run anyways**
+![alt text](https://github.com/MarzellT/face-attractivness/blob/master/install_images/smartscreen.png "Windows SmartScreen")
 
 ## Advanced🤓 (You can skip that go to usage)
 If you want you can also create a virtualenvironment specifically for this repository.      
