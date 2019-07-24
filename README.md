@@ -5,7 +5,7 @@
 - Locate it in your downloads folder
 1. Double click the folder
 2. Move folder `face-attractivness-master` to your desktop
-- Windows User follow the stepts in the next section called **Windows**
+- Windows Users follow the steps in the section **Windows** now
 
 ## Windows:point_left:
 ### 1. Install Python3🐍
