@@ -38,9 +38,6 @@ Now you can `pip install -r requirements.txt` in your virtualenvironment.
 To leave the virtualenvironment simply type `deactivate` or leave your terminal session.     
 
 # Usage👩‍💻  
-🚶‍♂️      
-The following step is **not required** if you don't use a virtual environment which is also **not required**.
-If you created a virtual environment (advanced installation section) activate it now.
 
 ## Windows
 ### What you need to do
