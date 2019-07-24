@@ -29,6 +29,7 @@ Now you can `pip install -r requirements.txt` in your virtualenvironment.
 To leave the virtualenvironment simply type `deactivate` or leave your terminal session.     
 
 # Usage👩‍💻  
+🚶‍♂️      
 The following step is **not required** if you don't use a virtual environment which is also **not required**.
 If you created a virtual environment (Advanced Install section) activate it now.
 
@@ -37,9 +38,9 @@ If you created a virtual environment (Advanced Install section) activate it now.
 Just double click face_rating.py.     
 You can exit the program at any time using the "Beenden" button.      
 If you exit not using the "Beenden" button before finishing no csv will be created.    
-If you finished please send me the csv file.     
+If you finished please send me the csv file.💌     
 My email is <tobias.marzell@gmail.com>.     
-You can also send me the file through any other service.     
+You can also send me the file through any other service.🕊
 
 ### Advanced
 You can also run this program through your terminal with arguments.    
