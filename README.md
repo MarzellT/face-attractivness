@@ -1,18 +1,19 @@
 # Installation:nail_care:
 
-## -Download this repository.        
-You can do that by either clicking the green button "Clone or download" and then "Download ZIP"
-or through your teminal by typing:       
-`git@github.com:MarzellT/face-attractivness.git`      
-if you like.     
-If you downloaded the ZIP you need to locate it in your downloads folder and then unzip it
-using a tool like winzip or winrar.
+## Download this repository      
+- Click the green button "Clone or download" and then "Download ZIP".           
+- Locate it in your downloads folder
+·· 1. Double click the folder
+·· 2. Move folder `face-attractivness-master` to your desktop
+- Windows User follow the stepts in the next section called **Windows**
 
 ## Windows:point_left:
-### Install Python3🐍
-Go to <https://www.python.org/downloads/windows/>.    
-Download and install the latest version of Python3.   
-**Mark _☑️ Add Python 3.X to PATH_ in the installer.**    
+### 1. Install Python3🐍
+- Go to <https://www.python.org/downloads/windows/>   
+- Download and install the latest version of Python3.   
+·· 1.**Mark _☑️ Add Python 3.X to PATH_ in the installer.**    
+·· 2. Click **Install**
+- Proceed with step **Install dependencies**
 
 ### Install dependencies🤨
 ~~Open cmd (if you don't know how simply open the start menu and search for cmd).
@@ -23,10 +24,11 @@ Now type `pip install -r requirements.txt`.~~
 😏      
 Actually forget that stuff. 
 😅
-I implemented a much simpler feature. All you need to do is
-run the `windows_setup` file (you need to trust the program) from this folder.
+I implemented a much simpler feature.
+- Run the `windows_setup` file from this folder.
+- If a blue screen like this opens click **more Info** and then **run anyways**
 
-## Advanced🤓
+## Advanced🤓 (You can skip that go to usage)
 If you want you can also create a virtualenvironment specifically for this repository.      
 To do so simply type `virtualenv venv` in the folder of this repository.      
 Then you want to activate it by typing `source venv/bin/activate`.     
@@ -39,12 +41,11 @@ The following step is **not required** if you don't use a virtual environment wh
 If you created a virtual environment (advanced installation section) activate it now.
 
 ## Windows
-### Default
-Just double click face_rating.py.     
-You can exit the program at any time using the "Beenden" button.      
-If you exit not using the "Beenden" button before finishing, no csv will be created.    
-If you finished please send me the csv file.💌     
-My email is <tobias.marzell@gmail.com>.     
+### What you need to do
+- Double click face_rating.py         
+- After finishing a new file will be in the folder called **ratings.csv**
+- Send me this file💌     
+- My email is <tobias.marzell@gmail.com>.     
 You can also send me the file through any other service.🕊
 
 ### Advanced
