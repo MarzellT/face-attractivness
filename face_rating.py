@@ -102,7 +102,7 @@ class Window:
         """ Make window inactive and show that program is finished. """
         if not self.endflag:
 
-            dank_sagung = ("Vielen Dank für deine Hilfe, du bist großartig!\n" +\
+            dank_sagung = ("Vielen Dank für deine Hilfe, du bist großartig!❤️\n" +\
             "Als letzten Schritt bitte ich dich die Datei 'ratings.csv' noch an mich zu schicken.\n" +\
             "Nochmal vielen Dank für deine Zeit.")
             messagebox.showinfo("Vielen Dank!", dank_sagung)
