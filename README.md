@@ -1,12 +1,12 @@
-# Installation
+# Installation:nail_care:
 
 The first thing you need to do is to clone this repository.        
 You can do that by either using the webclient or through your teminal by typing:       
 `git@github.com:MarzellT/face-attractivness.git`      
 
-## Windows
-### Install Python3
-Go to `https://www.python.org/downloads/windows/`.    
+## Windows:point_left:
+### Install Python3🐍
+Go to <https://www.python.org/downloads/windows/>.    
 Download and install the latest version of Python3.   
 Mark `Add Python 3.X to PATH` in the installer.    
 
@@ -16,7 +16,7 @@ Type `cd reposdirectory` (reposdirector is the path to where you have downloaded
 for example `cd C:\Users\YourName\Desktop\face-attractivness-master` where YourName is 
 the name of the current Windows user. This name is actually displayed when you open the cmd.)     
 Now type `pip install -r requirements.txt`.~~   
-Actually forget that stuff I implemented a much simpler feature. All you need to do is
+Actually forget that stuff. I implemented a much simpler feature. All you need to do is
 run the `windows_setup` file (you need to trust the program).
 
 ## Advanced
@@ -27,8 +27,8 @@ Now you can `pip install -r requirements.txt` in your virtualenvironment.
 To leave the virtualenvironment simply type `deactivate` or leave your terminal session.     
 
 # Usage      
-To use the face rater activate your virtualenvironment if you created one
-(from the advanced install section).
+The following step is **not required** if you don't use a virtual environment which is also **not required**.
+If you created a virtual environment (Advanced Install section) activate it now.
 
 ## Windows
 ### Default
@@ -36,7 +36,7 @@ Just double click face_rating.py.
 You can exit the program at any time using the "Beenden" button.      
 If you exit not using the "Beenden" button before finishing no csv will be created.    
 If you finished please send me the csv file.     
-My email is `tobias.marzell@gmail.com`.     
+My email is <tobias.marzell@gmail.com>.     
 You can also send me the file through any other service.     
 
 ### Advanced
