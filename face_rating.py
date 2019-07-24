@@ -138,7 +138,7 @@ class Window:
                 # check for correct entry
                 if rating.isnumeric():
                     if int(rating) > 0 and int(rating) < 11:
-                        self.ratings += self.paths[self.current_image] + ';' + rating + '\n'            
+                        self.ratings += self.paths[self.current_image] + ',' + rating + '\n'            
                         self.current_image += 1
                         self.panel.config(image = self.photo_images[self.current_image])
                         self.progress.config(text=("Bild " + str(self.current_image + 1) + " von " + str(len(self.photo_images)) + "."))
