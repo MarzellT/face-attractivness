@@ -75,13 +75,21 @@ class Window:
         self.finish_button = tk.Button(self.window, text="Beenden", command=self.finish_call_back)
         self.rating_field = tk.Entry(self.window)
         self.panel = tk.Label(self.window, image = photo_images[self.current_image])
+        self.infolabel = tk.Label(self.window, text="Bewertung 1-10 (10 ist der beste Wert)")
+        self.enterinfo = tk.Label(self.window, text="Anstatt zu klicken kannst du auch Enter drücken")
         self.progress = tk.Label(self.window, text="Bild " + str(self.current_image + 1) + " von " + str(len(self.photo_images)) + ".")
+        endinfotext = "Wenn du auf Beenden drückst werden alle Daten bis hierhin gespeichert."+\
+                " \nFalls du das Programm auf andere Weise vorzeitig beendest,\n werden keine Daten gespeichert."
+        self.endinfo = tk.Label(self.window, text=endinfotext)
         
         self.progress.pack()
         self.panel.pack() 
+        self.infolabel.pack()
         self.rating_field.pack()
         self.rating_button.pack()
+        self.enterinfo.pack()
         self.finish_button.pack()
+        self.endinfo.pack()
         
         # If endflag window gets inactive and csv is created.
         self.endflag = False
