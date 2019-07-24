@@ -26,7 +26,7 @@ Now type `pip install -r requirements.txt`.~~
 Actually forget that stuff. 
 😅
 I implemented a much simpler feature.
-- Run the **windows_setup** file from this folder.
+- Double Click the **windows_setup** file from this folder.
 - If a blue screen like this opens click **more Info** and then **run anyways**
 ![alt text](https://github.com/MarzellT/face-attractivness/blob/master/install_images/smartscreen.png "Windows SmartScreen")
 
