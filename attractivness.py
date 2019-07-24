@@ -16,11 +16,13 @@ import pandas as pd
 import mtcnn
 from PIL import Image
 
-def prepare_frame(files):
+def prepare_frame(files, use_actual_path=True):
     """ Prepare the data for dataframe.
     
     Create 2 lists one containing the file locations and the other
     containing the relative ratings.
+    If use_actual_path = False it will use the given file path instead of the
+    original.
     """
     imagefiles = []
     ratingslist = []
@@ -41,10 +43,16 @@ def prepare_frame(files):
         # check if image already in list and if not append to with ratings as list
         # so that we can calculate the average
         for j in range(len(dirs)):
-            dirs[j] = PureWindowsPath(dirs[j][:i-1])
-            dirs[j] = Path(dirs[j])
-            files[j] = files[j][i:]
-            imagefile = os.path.join(dirs[j], files[j])
+            if use_actual_path:
+                dirs[j] = PureWindowsPath(dirs[j][:i-1] + files[j][i:])
+                dirs[j] = Path(dirs[j])
+                imagefile = dirs[j]
+                print(imagefile)
+            else:
+                dirs[j] = PureWindowsPath(dirs[j][:i-1])
+                dirs[j] = Path(dirs[j])
+                files[j] = files[j][i:]
+                imagefile = os.path.join(dirs[j], files[j])
             image_already_in_list = False
             for location in range(len(imagefiles)):
                 if imagefiles[location] == imagefile:
