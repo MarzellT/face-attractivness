@@ -4,7 +4,9 @@ The first thing you need to do is to clone this repository.
 You can do that by either clicking the green button "Clone or download" and then "Download ZIP"
 or through your teminal by typing:       
 `git@github.com:MarzellT/face-attractivness.git`      
-if you like.
+if you like.     
+If you downloaded the ZIP you need to locate it in your downloads folder and then unzip it
+using a tool like winzip or winrar.
 
 ## Windows:point_left:
 ### Install Python3🐍
@@ -19,9 +21,10 @@ for example `cd C:\Users\YourName\Desktop\face-attractivness-master` where YourN
 the name of the current Windows user. This name is actually displayed when you open the cmd.)     
 Now type `pip install -r requirements.txt`.~~   
 😏      
-Actually forget that stuff. I implemented a much simpler feature. All you need to do is
-run the `windows_setup` file (you need to trust the program).
+Actually forget that stuff. 
 😅
+I implemented a much simpler feature. All you need to do is
+run the `windows_setup` file (you need to trust the program) from this folder.
 
 ## Advanced🤓
 If you want you can also create a virtualenvironment specifically for this repository.      
