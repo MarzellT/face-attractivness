@@ -61,3 +61,8 @@ no person is selected twice.
 `choices.py` does not use any dependecies.    
 To run choices.py you must enter `choices.py arg1 args`.     
 `arg1` is the amount of pictures you want and args are the folders in which your pictures are.    
+ 
+ # Todo
+ Assumption: I can assume that the score of one picture of one person generalises to all pictures of this person.    
+ I can use this assumption to train on all images of that person to have more train data.     
+ - Implement training based on this assumption.
