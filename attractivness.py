@@ -11,6 +11,7 @@ from keras_vggface.utils import preprocess_input
 from keras.optimizers import Adam
 from keras.callbacks import EarlyStopping
 import keras.backend as K
+from glob import glob
 import numpy as np
 import pandas as pd
 import mtcnn
@@ -166,7 +167,7 @@ def test_on_batch(model, files):
     return preds
 
 def main():
-    files = sys.argv[1:]
+    files = glob(sys.argv[1])
     train = True
     name = "first_try"
 
@@ -180,8 +181,9 @@ def main():
     data = create_dataframe(files)
 
     if train:
-        model = train_model(model, data, checkpoint=name, epochs=5, batch_size=20)
-        model.save_weights('weights/' + name + '.h5')
+        model = train_model(model, data, checkpoint=name, epochs=1, batch_size=20)
+        model.save_weights(os.path.normpath(os.path.join(
+            os.getcwd(), 'weights/' + name + '.h5')))
     else:
         model.load_weights("first_try.h5")
 
