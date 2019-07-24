@@ -3,16 +3,16 @@
 ## Download this repository      
 - Click the green button "Clone or download" and then "Download ZIP".           
 - Locate it in your downloads folder
-··* 1. Double click the folder
-··* 2. Move folder `face-attractivness-master` to your desktop
+⋅⋅1. Double click the folder
+··2. Move folder `face-attractivness-master` to your desktop
 - Windows User follow the stepts in the next section called **Windows**
 
 ## Windows:point_left:
 ### 1. Install Python3🐍
 - Go to <https://www.python.org/downloads/windows/>   
 - Download and install the latest version of Python3.   
-··* 1.**Mark _☑️ Add Python 3.X to PATH_ in the installer.**    
-··* 2. Click **Install**
+··1.**Mark _☑️ Add Python 3.X to PATH_ in the installer.**    
+··2. Click **Install**
 - Proceed with step **Install dependencies**
 
 ### Install dependencies🤨
