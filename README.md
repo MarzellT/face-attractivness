@@ -11,7 +11,8 @@
 ### 1. Install Python3🐍
 - Go to <https://www.python.org/downloads/windows/>   
 - Download and install the latest version of Python3.   
-1.**Mark _☑️ Add Python 3.X to PATH_ in the installer.**    
+1.**Mark _☑️ Add Python 3.X to PATH_ in the installer.**
+![alt text](https://github.com/MarzellT/face-attractivness/blob/master/install_images/python-install.JPG "Python Install")
 2. Click **Install**
 - Proceed with step **Install dependencies**
 
