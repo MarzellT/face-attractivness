@@ -58,7 +58,12 @@ class Window:
                 print(f)
             if image != None:
                 paths.append(path)
-                image = image.resize((300,300))
+                if (image.size[0] or image.size[1]) > 300:
+                    image = image.resize((300,300))
+                else:
+                    containerimage = Image.new('RGBA', (300,300), color=(0,0,0,0))
+                    containerimage.paste(image, (int(150-image.width/2), int(150-image.height/2)))
+                    image = containerimage
                 images.append(image)
 
 
