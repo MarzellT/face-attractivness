@@ -10,23 +10,25 @@ Go to <https://www.python.org/downloads/windows/>.
 Download and install the latest version of Python3.   
 Mark `Add Python 3.X to PATH` in the installer.    
 
-### Install dependencies
+### Install dependencies🤨
 ~~Open cmd (if you don't know how simply open the start menu and search for cmd).
 Type `cd reposdirectory` (reposdirector is the path to where you have downloaded the files
 for example `cd C:\Users\YourName\Desktop\face-attractivness-master` where YourName is 
 the name of the current Windows user. This name is actually displayed when you open the cmd.)     
 Now type `pip install -r requirements.txt`.~~   
+😏      
 Actually forget that stuff. I implemented a much simpler feature. All you need to do is
 run the `windows_setup` file (you need to trust the program).
+😅
 
-## Advanced
+## Advanced🤓
 If you want you can also create a virtualenvironment specifically for this repository.      
 To do so simply type `virtualenv venv` in the folder of this repository.      
 Then you want to activate it by typing `source venv/bin/activate`.     
 Now you can `pip install -r requirements.txt` in your virtualenvironment.    
 To leave the virtualenvironment simply type `deactivate` or leave your terminal session.     
 
-# Usage      
+# Usage👩‍💻  
 The following step is **not required** if you don't use a virtual environment which is also **not required**.
 If you created a virtual environment (Advanced Install section) activate it now.
 
