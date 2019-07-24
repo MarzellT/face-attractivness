@@ -74,9 +74,9 @@ def get_avg_ratings(ratingslist):
         i = 0
         avg = 0
         for rating in ratingslist[j]:
-            avg += rating
+            avg += (rating-1)
             i += 1
-        ratingslist[j] = avg/i/10
+        ratingslist[j] = avg/i/9
 
     return ratingslist
 
@@ -190,7 +190,7 @@ def main():
     predictions = test_on_batch(model, data.iloc[:,0])
     
     for i in range(len(predictions)):
-        print(data.iloc[i,0], predictions[i]*10)
+        print(data.iloc[i,0], predictions[i]*9+1, data.iloc[i,1])
 
 if __name__ == "__main__":
     main()
