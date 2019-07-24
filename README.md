@@ -5,7 +5,7 @@
 - Locate it in your downloads folder
 1. Double click the folder
 2. Move folder `face-attractivness-master` to your desktop
-- Windows Users follow the steps in the section **Windows** now
+- Windows users follow the steps in the section **Windows** now
 
 ## Windows:point_left:
 ### 1. Install Python3🐍
@@ -38,7 +38,7 @@ Now you can `pip install -r requirements.txt` in your virtualenvironment.
 To leave the virtualenvironment simply type `deactivate` or leave your terminal session.     
 
 # Usage👩‍💻  
-
+- Windows users proceed with **Windows** section
 ## Windows
 ### What you need to do
 - Double click face_rating.py         
