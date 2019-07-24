@@ -49,9 +49,11 @@ class Window:
         # Load images.
         for f in files:
             image = None
+            path = None
             try:
-                path = (f)
-                image = Image.open(path)
+                # this line splits folder and image with in csv
+                path = (f[:len(dir)+7] + '.' + f[len(dir)+7:])
+                image = Image.open(f)
             except Exception:
                 print(f)
             if image != None:
