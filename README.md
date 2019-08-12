@@ -3,16 +3,17 @@
 ## Download this repository      
 - Click the green button "Clone or download" and then "Download ZIP".           
 - Locate it in your downloads folder
-·· 1. Double click the folder
-·· 2. Move folder `face-attractivness-master` to your desktop
-- Windows User follow the stepts in the next section called **Windows**
+1. Double click the folder
+2. Move folder `face-attractivness-master` to your desktop
+- Windows users follow the steps in the section **Windows** now
 
 ## Windows:point_left:
 ### 1. Install Python3🐍
 - Go to <https://www.python.org/downloads/windows/>   
 - Download and install the latest version of Python3.   
-·· 1.**Mark _☑️ Add Python 3.X to PATH_ in the installer.**    
-·· 2. Click **Install**
+1.**Mark _☑️ Add Python 3.X to PATH_ in the installer.**
+![alt text](https://github.com/MarzellT/face-attractivness/blob/master/install_images/python-install.JPG "Python Install")
+2. Click **Install Now**
 - Proceed with step **Install dependencies**
 
 ### Install dependencies🤨
@@ -25,8 +26,9 @@ Now type `pip install -r requirements.txt`.~~
 Actually forget that stuff. 
 😅
 I implemented a much simpler feature.
-- Run the `windows_setup` file from this folder.
+- Double Click the **windows_setup** file from this folder.
 - If a blue screen like this opens click **more Info** and then **run anyways**
+![alt text](https://github.com/MarzellT/face-attractivness/blob/master/install_images/smartscreen.png "Windows SmartScreen")
 
 ## Advanced🤓 (You can skip that go to usage)
 If you want you can also create a virtualenvironment specifically for this repository.      
@@ -36,10 +38,7 @@ Now you can `pip install -r requirements.txt` in your virtualenvironment.
 To leave the virtualenvironment simply type `deactivate` or leave your terminal session.     
 
 # Usage👩‍💻  
-🚶‍♂️      
-The following step is **not required** if you don't use a virtual environment which is also **not required**.
-If you created a virtual environment (advanced installation section) activate it now.
-
+- Windows users proceed with **Windows** section
 ## Windows
 ### What you need to do
 - Double click face_rating.py         
