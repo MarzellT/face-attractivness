@@ -63,7 +63,25 @@ no person is selected twice.
 To run choices.py you must enter `choices.py arg1 args`.     
 `arg1` is the amount of pictures you want and args are the folders in which your pictures are.    
  
- # Todo
- Assumption: I can assume that the score of one picture of one person generalises to all pictures of this person.    
- I can use this assumption to train on all images of that person to have more train data.     
- - Implement training based on this assumption.
+# Todo
+Assumption: I can assume that the score of one picture of one person generalises to all pictures of this person.    
+I can use this assumption to train on all images of that person to have more train data.     
+- Implement training based on this assumption.    
+    
+Idea: I want to save all images and their rating based on above assumption.    
+In my first implementation i saved all images into a list and their ratings into seperate ordered lists.    
+The lists are ordered by the filenames. This implementation is very bad though.     
+The main reason is complexity. Instead I want to use a dictionary contating the information now.
+I think I should create a dictionary in form of:     
+{filename1: [list of ratings]}     
+{filename2: [list of ratings]}     
+{filename3: [list of ratings]}     
+{filename4: [list of ratings]}     
+		...  
+{filenamen-3: [list of ratings]}     
+{filenamen-2: [list of ratings]}     
+{filenamen-1: [list of ratings]}     
+{filenamen: [list of ratings]}     
+I will save every single filename into this dictionary including the ones from the same folder(which implies the same person).
+What I currently do is saving all information into a list and then check the list for already present filenames then
+either appending to the list of raitngs or creating a new list and then appending to the list (depending on the case obviously).    
