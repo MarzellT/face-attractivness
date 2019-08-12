@@ -17,21 +17,26 @@ import pandas as pd
 import mtcnn
 from PIL import Image
 
-def prepare_frame(files, use_actual_path=True):
+def prepare_frame(files, use_actual_path=True, use_full_folder=None):
     """ Prepare the data for dataframe.
     
     Create 2 lists one containing the file locations and the other
     containing the relative ratings.
-    If use_actual_path = False it will use the given file path instead of the
+    If use_actual_path = True use the given file path instead of the
     original.
+    if use_full_folder = True use all images in the data folder of the
+    person. Will set use_actual_path to True.
     """
     imagefiles = []
     ratingslist = []
+    if use_full_folder != None:
+        use_actual_path = False
     for file in files:
+        print(file)
         data = pd.read_csv(file, header = None)
 
         dirs = data.iloc[:,0].tolist()
-        files = data.iloc[:,0].tolist()
+        filenames = data.iloc[:,0].tolist()
         ratings = data.iloc[:,1].tolist()
 
         # find . in filename to split data
@@ -44,29 +49,61 @@ def prepare_frame(files, use_actual_path=True):
         # check if image already in list and if not append to with ratings as list
         # so that we can calculate the average
         for j in range(len(dirs)):
+            print(j)
             if use_actual_path:
-                dirs[j] = PureWindowsPath(dirs[j][:i-1] + files[j][i:])
+                dirs[j] = PureWindowsPath(dirs[j][:i-1] + filenames[j][i:])
                 dirs[j] = Path(dirs[j])
                 imagefile = dirs[j]
-                print(imagefile)
+                imagefiles, ratingslist = add_to_list(imagefile, ratings[j], imagefiles, ratingslist)
             else:
                 dirs[j] = PureWindowsPath(dirs[j][:i-1])
                 dirs[j] = Path(dirs[j])
-                files[j] = files[j][i:]
-                imagefile = os.path.join(dirs[j], files[j])
-            image_already_in_list = False
-            for location in range(len(imagefiles)):
-                if imagefiles[location] == imagefile:
-                    image_already_in_list = True
+                if use_full_folder:
+                    fullfiles = []
+                    filename = os.path.basename(dirs[j])
+                    basefoldername = os.path.dirname(os.path.dirname(dirs[j]))
+                    basefoldername = os.path.join(basefoldername, use_full_folder)
+                    for imagefolder in os.listdir(basefoldername):
+                        print(imagefolder)
+                        try:
+                            for filename in os.listdir(os.path.join(basefoldername, imagefolder)):
+                                fullfilename = os.path.join(imagefolder, filename)
+                                imagefile = os.path.join(basefoldername, fullfilename)
+                                imagefiles, ratingslist = add_to_list(imagefile, ratings[j], imagefiles, ratingslist)
+                        except Exception:
+                            print(os.path.join(basefoldername, imagefolder))
                     break
-            if not image_already_in_list:
-                imagefiles.append(imagefile)
-                ratingslist.append([ratings[j]])
-            else:
-                ratingslist[location].append(ratings[j])
+                filenames[j] = filenames[j][i:]
+                imagefile = os.path.join(dirs[j], filenames[j])
+                print("wird ausgeführt")
+                imagefiles, ratingslist = add_to_list(imagefile, ratings[j], imagefiles, ratingslist)
 
+
+    print(len(ratingslist))
     ratingslist = get_avg_ratings(ratingslist)
     return imagefiles, ratingslist
+
+
+def add_to_list(imagefile, rating, imagefiles, ratingslist):
+    """ Add imagefile to all files including the rating list
+
+    Check if imagefile already is in list.
+    If it is then just add the rating to the file.
+    If it is not then add the file and the first rating.
+    At the end return the files with their ratings.
+    """
+    image_already_in_list = False
+    for location in range(len(imagefiles)):
+        if imagefiles[location] == imagefile:
+            image_already_in_list = True
+            break
+    if not image_already_in_list:
+        imagefiles.append(imagefile)
+        ratingslist.append([rating])
+    else:
+        ratingslist[location].append(rating)
+    return imagefiles, ratingslist
+
 
 def get_avg_ratings(ratingslist):
     """ Calcuate the average rating of each image. """
@@ -82,7 +119,7 @@ def get_avg_ratings(ratingslist):
 
 def create_dataframe(files):
     """ Create the dataframe containing the info about the images and ratings. """
-    imagefiles, ratingslist = prepare_frame(files)
+    imagefiles, ratingslist = prepare_frame(files, use_full_folder='test')
     ratingframe = pd.DataFrame({'files': imagefiles, 'ratings': ratingslist})
     return ratingframe
 
@@ -167,7 +204,9 @@ def test_on_batch(model, files):
     return preds
 
 def main():
-    files = glob(sys.argv[1])
+    files = sys.argv[1:]
+    for file in files:
+        file = glob(file)
     train = True
     name = "first_try"
 
