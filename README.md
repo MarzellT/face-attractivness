@@ -54,6 +54,7 @@ Example: `python3 face_rating.py data/raten/*`.
 If you specify the location you can use complete or relative path.       
 
 # Additional
+The data is available to download here: http://zeus.robots.ox.ac.uk/vgg_face2/
 You can create your own image folder using choices.py.     
 This requries that images of differenct people are in differenct subfolders
 because it will randomly select 1 picture of those folders. This ensures that
