@@ -28,19 +28,17 @@ def prepare_frame(files, use_actual_path=True, use_full_folder=None):
     person. Will set use_actual_path to True.
     """
     imagefiles = []
-    ratingslist = []
     ratingsdict = {}
+    fncnt = []
     if use_full_folder != None:
         use_actual_path = False
     for file in files:
-        print(file)
         data = pd.read_csv(file, header = None)
 
         dirs = data.iloc[:,0].tolist()
         filenames = data.iloc[:,0].tolist()
         ratings = data.iloc[:,1].tolist()
 
-        # don't know why I didn't use this (maybe forgot I did this?)
         # find . in filename to split data between dirs and filenames
         i = 0
         for letter in dirs[0]:
@@ -48,74 +46,90 @@ def prepare_frame(files, use_actual_path=True, use_full_folder=None):
             if letter == '.':
                 break
 
+        for j in range(len(dirs)):
+            dirs[j] = PureWindowsPath(dirs[j][:i-1])
+            dirs[j] = Path(dirs[j])
+            dirrating = ratings[j]
+            dirname = os.path.basename(dirs[j])
+            basefoldername = os.path.dirname(os.path.dirname(dirs[j]))
+            basefoldername = os.path.join(basefoldername, 'test')
+            curdir = os.path.join(basefoldername, dirname)
+            fncnt.append(curdir)
+            try:
+                for filename in os.listdir(curdir):
+                    imagefile = os.path.join(curdir, filename)
+                    ratingsdict = add_to_dict(imagefile, dirrating, ratingsdict)
+            except Exception:
+                print('error:', os.path.join(basefoldername, imagefolder))
         # check if image already in list and if not append to with ratings as list
         # so that we can calculate the average
-        for j in range(len(dirs)):
-            if use_actual_path:
-                dirs[j] = PureWindowsPath(dirs[j][:i-1] + filenames[j][i:])
-                dirs[j] = Path(dirs[j])
-                imagefile = dirs[j]
-                imagefiles, ratingslist = add_to_dict(imagefile, ratings[j], ratingsdict)
-            else:
-                dirs[j] = PureWindowsPath(dirs[j][:i-1])
-                dirs[j] = Path(dirs[j])
-                if use_full_folder:
-                    fullfiles = []
-                    filename = os.path.basename(dirs[j])
-                    basefoldername = os.path.dirname(os.path.dirname(dirs[j]))
-                    basefoldername = os.path.join(basefoldername, use_full_folder)
-                    for imagefolder in os.listdir(basefoldername):
-                        print(imagefolder)
-                        try:
-                            for filename in os.listdir(os.path.join(basefoldername, imagefolder)):
-                                fullfilename = os.path.join(imagefolder, filename)
-                                imagefile = os.path.join(basefoldername, fullfilename)
-                                imagefiles, ratingslist = add_to_list(imagefile, ratings[j], ratingsdict)
-                        except Exception:
-                            print(os.path.join(basefoldername, imagefolder))
-                    break
-                filenames[j] = filenames[j][i:]
-                imagefile = os.path.join(dirs[j], filenames[j])
-                print("wird ausgeführt")
-                imagefiles, ratingslist = add_to_list(imagefile, ratings[j], ratingsdict)
+        #for j in range(len(dirs)):
+        #    if use_actual_path:
+        #        dirs[j] = PureWindowsPath(dirs[j][:i-1] + filenames[j][i:])
+        #        dirs[j] = Path(dirs[j])
+        #        imagefile = dirs[j]
+        #        ratingsdict = add_to_dict(imagefile, ratings[j], ratingsdict)
+        #    else:
+        #        dirs[j] = PureWindowsPath(dirs[j][:i-1])
+        #        dirs[j] = Path(dirs[j])
+        #        if use_full_folder:
+        #            filename = os.path.basename(dirs[j])
+        #            basefoldername = os.path.dirname(os.path.dirname(dirs[j]))
+        #            basefoldername = os.path.join(basefoldername, 'test')
+        #            for imagefolder in os.listdir(basefoldername):
+        #                try:
+        #                    for filename in os.listdir(os.path.join(basefoldername, imagefolder)):
+        #                        fullfilename = os.path.join(imagefolder, filename)
+        #                        imagefile = os.path.join(basefoldername, fullfilename)
+        #                        ratingsdict = add_to_dict(imagefile, ratings[j], ratingsdict)
+        #                except Exception:
+        #                    print('error:', os.path.join(basefoldername, imagefolder))
+        #            continue
+        #        filenames[j] = filenames[j][i:]
+        #        imagefile = os.path.join(dirs[j], filenames[j])
+        #        print("wird ausgeführt")
+        #        ratingsdict = add_to_dict(imagefile, ratings[j], ratingsdict)
 
-
-    print(len(ratingsdict.keys()))
     ratingsdict = get_avg_ratings(ratingsdict)
+    print(len(ratingsdict))
+    print(len(set(fncnt)))
     return ratingsdict
 
 
-def add_to_list(imagefile, rating, ratingsdict):
+def add_to_dict(imagefile, rating, ratingsdict):
     """ Add the rating of the imagefile to the dictionary.
 
     If imagefile is not yet in the dictionary it gets added.
     Also add the first rating.
-    If it is then just add the rating to the files ratingslist.
+    If it is then just add the rating to the files ratingsdict.
     At the end return the updated dictionary.
     """
     try:
         ratingsdict[imagefile].append(rating)
     except Exception:
         ratingsdict[imagefile] = []
-        ratingdict[imagefile].append(rating)
+        ratingsdict[imagefile].append(rating)
     return ratingsdict
 
 def get_avg_ratings(ratingsdict):
     """ Calcuate the average rating of each image. """
-    for key in ratingslist.keys():
+    for key in ratingsdict.keys():
         i = 0
         avg = 0
         for rating in ratingsdict[key]:
-            avg += (rating-1)
+            avg += rating
             i += 1
-        ratingsdict[key] = avg/i/9
+        try:
+            ratingsdict[key] = avg/i/9
+        except Exception:
+            pass
 
-    return ratingslist
+    return ratingsdict
 
 def create_dataframe(files):
     """ Create the dataframe containing the info about the images and ratings. """
     ratingsdict = prepare_frame(files, use_full_folder='test')
-    ratingframe = pd.DataFrame(ratingsdict)
+    ratingframe = pd.DataFrame(list(ratingsdict.items()))
     return ratingframe
 
 def prepare_image(file):
@@ -124,6 +138,7 @@ def prepare_image(file):
     The image will be resized to size 224x224 and preprocessed
     using keras and numpy functions.
     """
+    print('prepare image', file)
     try:
         prepared = image.load_img(file, target_size=(224, 224))
         prepared = image.img_to_array(prepared)
@@ -213,6 +228,8 @@ def main():
         layer.trainable = True
     
     data = create_dataframe(files)
+    print(data)
+    quit()
 
     if train:
         model = train_model(model, data, checkpoint=name, epochs=1, batch_size=20)
