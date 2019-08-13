@@ -47,15 +47,22 @@ def prepare_frame(files, use_actual_path=True, use_full_folder=None):
                 break
 
         for j in range(len(dirs)):
+            # setup path this
+            # i figured this weird way is needed for this to work in windows (not tested though)
             dirs[j] = PureWindowsPath(dirs[j][:i-1])
             dirs[j] = Path(dirs[j])
-            dirrating = ratings[j]
             dirname = os.path.basename(dirs[j])
             basefoldername = os.path.dirname(os.path.dirname(dirs[j]))
             basefoldername = os.path.join(basefoldername, 'test')
+
+            dirrating = ratings[j]
             curdir = os.path.join(basefoldername, dirname)
+
             fncnt.append(curdir)
             try:
+                # here we take every image of the folder and assign the rating of
+                # the one rated picture to all based on assumption described in the
+                # README file
                 for filename in os.listdir(curdir):
                     imagefile = os.path.join(curdir, filename)
                     ratingsdict = add_to_dict(imagefile, dirrating, ratingsdict)
@@ -120,7 +127,7 @@ def get_avg_ratings(ratingsdict):
             avg += rating
             i += 1
         try:
-            ratingsdict[key] = avg/i/9
+            ratingsdict[key] = (avg/i-1)/9
         except Exception:
             pass
 
