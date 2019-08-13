@@ -236,7 +236,6 @@ def main():
     
     data = create_dataframe(files)
     print(data)
-    quit()
 
     if train:
         model = train_model(model, data, checkpoint=name, epochs=1, batch_size=20)
