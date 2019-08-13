@@ -1,4 +1,6 @@
 import os
+import glob
+import argparse
 import sys
 import keras
 import keras_vggface
@@ -221,10 +223,22 @@ def test_on_batch(model, files):
     return preds
 
 def main():
-    files = sys.argv[1:]
-    for file in files:
-        file = glob(file)
-    train = True
+    #try:
+    parser = argparse.ArgumentParser(description='files need to be the rating files')
+    parser.add_argument("-f", "--files", nargs='*', required=True)
+    parser.add_argument("--number", nargs=1)
+    parser.add_argument("--entire_folder", nargs=1)
+    parser.add_argument("--train", nargs=1)
+    args = parser.parse_args(sys.argv[1:])
+    #except Exception:
+    #    print(Exception)
+
+    endafter = None
+    entire = None
+
+    files = args.files
+
+    train = args.train
     name = "first_try"
 
     model = create_model()
