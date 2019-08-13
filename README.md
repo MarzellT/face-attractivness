@@ -85,3 +85,5 @@ I think I should create a dictionary in form of:
 I will save every single filename into this dictionary including the ones from the same folder(which implies the same person).
 What I currently do is saving all information into a list and then check the list for already present filenames then
 either appending to the list of raitngs or creating a new list and then appending to the list (depending on the case obviously).    
+
+- implement full argparse together with their options
