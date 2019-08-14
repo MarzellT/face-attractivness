@@ -92,5 +92,6 @@ What already works:
 files: the location of the rating files     
 number: number to early stop when using full_folder option     
 train: whether to train or inference    
+full_folder: whether to use all images of a person or not
 What needs to be implemented
-full_folder: also needs change in the code because we only got the option to load full folders now anyway
+visualise the results
