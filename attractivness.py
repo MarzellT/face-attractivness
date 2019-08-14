@@ -17,7 +17,7 @@ from glob import glob
 import numpy as np
 import pandas as pd
 import mtcnn
-from PIL import Image
+from PIL import Image, ImageDraw
 
 def prepare_frame(files, use_actual_path=True, use_full_folder=None, endearly=None):
     """ Prepare the data for dataframe.
@@ -52,7 +52,7 @@ def prepare_frame(files, use_actual_path=True, use_full_folder=None, endearly=No
                 break
 
         for j in range(len(dirs)):
-            # setup path this
+            # setup path
             # i figured this weird way is needed for this to work in windows (not tested though)
             filename = dirs[j][i:]
             dirs[j] = PureWindowsPath(dirs[j][:i-1])
@@ -80,6 +80,8 @@ def prepare_frame(files, use_actual_path=True, use_full_folder=None, endearly=No
             else:
                 imagefile = os.path.join(curdir, filename)
                 ratingsdict = add_to_dict(imagefile, dirrating, ratingsdict)
+        # ------OLD-------
+        #
         # check if image already in list and if not append to with ratings as list
         # so that we can calculate the average
         #for j in range(len(dirs)):
@@ -108,6 +110,7 @@ def prepare_frame(files, use_actual_path=True, use_full_folder=None, endearly=No
         #        imagefile = os.path.join(dirs[j], filenames[j])
         #        print("wird ausgeführt")
         #        ratingsdict = add_to_dict(imagefile, ratings[j], ratingsdict)
+        # -------remove in future versions--------
 
     ratingsdict = get_avg_ratings(ratingsdict)
     return ratingsdict
@@ -225,8 +228,13 @@ def test_on_batch(model, files):
 
     return preds
 
-def visualize_results():
-    pass
+def visualize_results(files, predictions):
+    for file in files:
+        file = Image.open(file)
+        # add prediciton as text to image
+        # save image in list of all images
+        # return the list
+
 
 def main():
     #try:
