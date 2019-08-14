@@ -86,4 +86,11 @@ I will save every single filename into this dictionary including the ones from t
 What I currently do is saving all information into a list and then check the list for already present filenames then
 either appending to the list of raitngs or creating a new list and then appending to the list (depending on the case obviously).    
 
-- implement full argparse together with their options
+## Implement full argparse together with their options
+The following is only tested on Unix systems.    
+What already works:     
+files: the location of the rating files     
+number: number to early stop when using full_folder option     
+train: whether to train or inference    
+What needs to be implemented
+full_folder: also needs change in the code because we only got the option to load full folders now anyway
