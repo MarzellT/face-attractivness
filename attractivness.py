@@ -19,7 +19,7 @@ import pandas as pd
 import mtcnn
 from PIL import Image
 
-def prepare_frame(files, use_actual_path=True, use_full_folder=None):
+def prepare_frame(files, use_actual_path=True, use_full_folder=None, endearly=None):
     """ Prepare the data for dataframe.
     
     Create 2 lists one containing the file locations and the other
@@ -65,11 +65,13 @@ def prepare_frame(files, use_actual_path=True, use_full_folder=None):
                 # here we take every image of the folder and assign the rating of
                 # the one rated picture to all based on assumption described in the
                 # README file
-                for filename in os.listdir(curdir):
+                for num, filename in enumerate(os.listdir(curdir)):
                     imagefile = os.path.join(curdir, filename)
                     ratingsdict = add_to_dict(imagefile, dirrating, ratingsdict)
-            except Exception:
-                print('error:', os.path.join(basefoldername, imagefolder))
+                    if num >= endearly:
+                        break
+            except Exception as e:
+                print(e, 'at:', os.path.join(basefoldername, curdir))
         # check if image already in list and if not append to with ratings as list
         # so that we can calculate the average
         #for j in range(len(dirs)):
@@ -135,9 +137,9 @@ def get_avg_ratings(ratingsdict):
 
     return ratingsdict
 
-def create_dataframe(files):
+def create_dataframe(files, use_full_folder=None, endearly=None):
     """ Create the dataframe containing the info about the images and ratings. """
-    ratingsdict = prepare_frame(files, use_full_folder='test')
+    ratingsdict = prepare_frame(files, use_full_folder=use_full_folder, endearly=endearly)
     ratingframe = pd.DataFrame(list(ratingsdict.items()))
     return ratingframe
 
@@ -226,15 +228,15 @@ def main():
     #try:
     parser = argparse.ArgumentParser(description='files need to be the rating files')
     parser.add_argument("-f", "--files", nargs='*', required=True)
-    parser.add_argument("--number", nargs=1)
+    parser.add_argument("--number", type=int, nargs=1)
     parser.add_argument("--entire_folder", nargs=1)
     parser.add_argument("--train", nargs=1)
     args = parser.parse_args(sys.argv[1:])
     #except Exception:
     #    print(Exception)
 
-    endafter = None
-    entire = None
+    endearly = args.number[0]
+    entire = args.entire_folder
 
     files = args.files
 
@@ -248,7 +250,7 @@ def main():
     for layer in model.layers[19:]:
         layer.trainable = True
     
-    data = create_dataframe(files)
+    data = create_dataframe(files, entire, endearly)
     print(data)
 
     if train:
