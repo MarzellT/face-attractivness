@@ -32,7 +32,10 @@ def prepare_frame(files, use_actual_path=True, use_full_folder=None, endearly=No
     imagefiles = []
     ratingsdict = {}
     fncnt = []
-    if use_full_folder != None:
+    if endearly:
+        # implent raise error endearly requires use_full_folder
+        pass
+    if use_full_folder:
         use_actual_path = False
     for file in files:
         data = pd.read_csv(file, header = None)
@@ -51,6 +54,7 @@ def prepare_frame(files, use_actual_path=True, use_full_folder=None, endearly=No
         for j in range(len(dirs)):
             # setup path this
             # i figured this weird way is needed for this to work in windows (not tested though)
+            filename = dirs[j][i:]
             dirs[j] = PureWindowsPath(dirs[j][:i-1])
             dirs[j] = Path(dirs[j])
             dirname = os.path.basename(dirs[j])
@@ -61,17 +65,21 @@ def prepare_frame(files, use_actual_path=True, use_full_folder=None, endearly=No
             curdir = os.path.join(basefoldername, dirname)
 
             fncnt.append(curdir)
-            try:
-                # here we take every image of the folder and assign the rating of
-                # the one rated picture to all based on assumption described in the
-                # README file
-                for num, filename in enumerate(os.listdir(curdir)):
-                    imagefile = os.path.join(curdir, filename)
-                    ratingsdict = add_to_dict(imagefile, dirrating, ratingsdict)
-                    if num >= endearly:
-                        break
-            except Exception as e:
-                print(e, 'at:', os.path.join(basefoldername, curdir))
+            if use_full_folder:
+                try:
+                    # here we take every image of the folder and assign the rating of
+                    # the one rated picture to all based on assumption described in the
+                    # README file
+                    for num, filename in enumerate(os.listdir(curdir)):
+                        imagefile = os.path.join(curdir, filename)
+                        ratingsdict = add_to_dict(imagefile, dirrating, ratingsdict)
+                        if num >= endearly:
+                            break
+                except Exception as e:
+                    print(e, 'at:', os.path.join(basefoldername, curdir))
+            else:
+                imagefile = os.path.join(curdir, filename)
+                ratingsdict = add_to_dict(imagefile, dirrating, ratingsdict)
         # check if image already in list and if not append to with ratings as list
         # so that we can calculate the average
         #for j in range(len(dirs)):
@@ -102,8 +110,6 @@ def prepare_frame(files, use_actual_path=True, use_full_folder=None, endearly=No
         #        ratingsdict = add_to_dict(imagefile, ratings[j], ratingsdict)
 
     ratingsdict = get_avg_ratings(ratingsdict)
-    print(len(ratingsdict))
-    print(len(set(fncnt)))
     return ratingsdict
 
 
@@ -171,17 +177,15 @@ def create_model(neurons=224, activation='sigmoid'):
     model=Model(inputs=base_model.input,outputs=preds)
     return model
 
-def train_model(model, data, epochs=20, batch_size=32, checkpoint=None):
+def train_model(model, files, targets, epochs=20, batch_size=32, checkpoint=None):
     """ Return trained model and train history.
 
     Trains a model for given data and optionally epochs. 
     """
     # Load training images and tagets into numpy array obejct.
     images = []
-    targets = []
-    for d in range(len(data.iloc[:,0])):
-        images.append(prepare_image(data.iloc[d,0]))
-        targets.append([data.iloc[d,1]])
+    for i in range(len(files)):
+        images.append(prepare_image(files[i]))
     images = np.array(images)
     targets = np.array(targets)
 
@@ -210,10 +214,7 @@ def save_model(model, file):
         f.write(model.to_json())
 
 def test_on_batch(model, files):
-    """ Test model on files in dir or pass through list. 
-    
-    If you want to change color_space more changes to the code have to be made.
-    """
+    """ Test model on files in dir or pass through list. """
     batch = []
     if isinstance(files, str):
         files = get_files_in_dir(files)
@@ -223,6 +224,9 @@ def test_on_batch(model, files):
     preds = model.predict_on_batch(batch)
 
     return preds
+
+def visualize_results():
+    pass
 
 def main():
     #try:
@@ -236,7 +240,10 @@ def main():
     #    print(Exception)
 
     endearly = args.number[0]
-    entire = args.entire_folder
+    try:
+        entire = args.entire_folder[0]
+    except Exception as e:
+        entire = False
 
     files = args.files
 
@@ -251,19 +258,20 @@ def main():
         layer.trainable = True
     
     data = create_dataframe(files, entire, endearly)
-    print(data)
+    files = data.iloc[:,0]
+    targets = data.iloc[:,1]
 
     if train:
-        model = train_model(model, data, checkpoint=name, epochs=1, batch_size=20)
+        model = train_model(model, files, targets, checkpoint=name, epochs=1, batch_size=20)
         model.save_weights(os.path.normpath(os.path.join(
             os.getcwd(), 'weights/' + name + '.h5')))
     else:
         model.load_weights("first_try.h5")
 
-    predictions = test_on_batch(model, data.iloc[:,0])
+    predictions = test_on_batch(model, files)
     
     for i in range(len(predictions)):
-        print(data.iloc[i,0], predictions[i]*9+1, data.iloc[i,1])
+        print(files[i], predictions[i]*9+1, data.iloc[i,1])
 
 if __name__ == "__main__":
     main()
