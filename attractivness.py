@@ -36,6 +36,8 @@ def prepare_frame(files, use_actual_path=True, use_full_folder=None, endearly=No
     if endearly:
         # implent raise error endearly requires use_full_folder
         pass
+    else:
+        endearly = False
     if use_full_folder:
         use_actual_path = False
     for file in files:
@@ -74,7 +76,7 @@ def prepare_frame(files, use_actual_path=True, use_full_folder=None, endearly=No
                     for num, filename in enumerate(os.listdir(curdir)):
                         imagefile = os.path.join(curdir, filename)
                         ratingsdict = add_to_dict(imagefile, dirrating, ratingsdict)
-                        if num >= endearly and not (endearly == None):
+                        if num >= endearly and not (endearly == False):
                             break
                 except Exception as e:
                     print(e, 'at:', os.path.join(basefoldername, curdir))
@@ -114,6 +116,7 @@ def prepare_frame(files, use_actual_path=True, use_full_folder=None, endearly=No
         # -------remove in future versions--------
 
     ratingsdict = get_avg_ratings(ratingsdict)
+    print(len(ratingsdict.keys()), 'images found')
     return ratingsdict
 
 
@@ -147,7 +150,7 @@ def get_avg_ratings(ratingsdict):
 
     return ratingsdict
 
-def create_dataframe(files, use_full_folder=None, endearly=None):
+def create_dataframe(files, use_full_folder=False, endearly=None):
     """ Create the dataframe containing the info about the images and ratings. """
     ratingsdict = prepare_frame(files, use_full_folder=use_full_folder, endearly=endearly)
     ratingframe = pd.DataFrame(list(ratingsdict.items()))
