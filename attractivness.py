@@ -1,4 +1,5 @@
 import os
+import datetime
 import glob
 import argparse
 import sys
@@ -11,7 +12,7 @@ from keras.models import Model, model_from_json
 from keras_vggface.vggface import VGGFace
 from keras_vggface.utils import preprocess_input
 from keras.optimizers import Adam
-from keras.callbacks import EarlyStopping
+from keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
 import keras.backend as K
 from glob import glob
 import numpy as np
@@ -73,7 +74,7 @@ def prepare_frame(files, use_actual_path=True, use_full_folder=None, endearly=No
                     for num, filename in enumerate(os.listdir(curdir)):
                         imagefile = os.path.join(curdir, filename)
                         ratingsdict = add_to_dict(imagefile, dirrating, ratingsdict)
-                        if num >= endearly:
+                        if num >= endearly and not (endearly == None):
                             break
                 except Exception as e:
                     print(e, 'at:', os.path.join(basefoldername, curdir))
@@ -180,10 +181,11 @@ def create_model(neurons=224, activation='sigmoid'):
     model=Model(inputs=base_model.input,outputs=preds)
     return model
 
-def train_model(model, files, targets, epochs=20, batch_size=32, checkpoint=None):
+def train_model(model, modelname, files, targets, epochs=20, batch_size=32, save_best_only=None):
     """ Return trained model and train history.
 
     Trains a model for given data and optionally epochs. 
+    If save_best_only is set will only save the best weights.
     """
     # Load training images and tagets into numpy array obejct.
     images = []
@@ -193,13 +195,15 @@ def train_model(model, files, targets, epochs=20, batch_size=32, checkpoint=None
     targets = np.array(targets)
 
     model.compile(optimizer='Adam', loss='mse')
-    if checkpoint:
-        name = checkpoint
-        filepath = "./weights/"+name+"best.hdf5"
-        checkpoint = EarlyStopping(monitor='val_loss', mode='min', restore_best_weights=True, verbose=1, patience=250)
-        model.fit(images, targets, validation_split=0.25, callbacks=[checkpoint], epochs=epochs, batch_size=batch_size, shuffle=True)
-    else:
-        model.fit(images, targets, validation_split=0.25, epochs=epochs, batch_size=batch_size, shuffle=True)
+    filepath = os.path.join(modelname + 'weights.{epoch:02d}.hdf5')
+    checkpoints = []
+    checkpoints.append(ModelCheckpoint(filepath, monitor='val_loss', verbose=0, save_best_only=save_best_only,
+        save_weights_only=True, mode='auto', period=1))
+    checkpoints.append(TensorBoard(log_dir=modelname, histogram_freq=0, batch_size=batch_size,
+        write_graph=True, write_grads=False, write_images=False, embeddings_freq=0, embeddings_layer_names=None,
+        embeddings_metadata=None, embeddings_data=None, update_freq='epoch')
+
+    model.fit(images, targets, validation_split=0.25, callbacks=checkpoints, epochs=epochs, batch_size=batch_size, shuffle=True)
     return model
 
 def load_model(file):
@@ -208,7 +212,6 @@ def load_model(file):
     model = json_file.read()
     json_file.close()
     model = model_from_json(model)
-
     return model
     
 def save_model(model, file):
@@ -246,8 +249,12 @@ def main():
     args = parser.parse_args(sys.argv[1:])
     #except Exception:
     #    print(Exception)
+    model_name = datetime.datetime.now().strftime("%I%M%p%B%d%Y")
 
-    endearly = args.number[0]
+    try:
+        endearly = args.number[0]
+    except Exception:
+        endearly = None
     try:
         entire = args.entire_folder[0]
     except Exception as e:
@@ -270,9 +277,9 @@ def main():
     targets = data.iloc[:,1]
 
     if train:
-        model = train_model(model, files, targets, checkpoint=name, epochs=1, batch_size=20)
-        model.save_weights(os.path.normpath(os.path.join(
-            os.getcwd(), 'weights/' + name + '.h5')))
+        model = train_model(model, modelname, files, targets, save_best_only=name, epochs=1, batch_size=20)
+        #model.save_weights(os.path.normpath(os.path.join(
+        #    os.getcwd(), 'weights/' + name + '.h5')))
     else:
         model.load_weights("first_try.h5")
 
