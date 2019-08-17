@@ -159,7 +159,6 @@ def prepare_image(file):
     The image will be resized to size 224x224 and preprocessed
     using keras and numpy functions.
     """
-    print('prepare image', file)
     try:
         prepared = image.load_img(file, target_size=(224, 224))
         prepared = image.img_to_array(prepared)
