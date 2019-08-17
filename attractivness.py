@@ -190,9 +190,12 @@ def train_model(model, modelname, files, targets, epochs=20, batch_size=32, save
     If save_best_only is set will only save the best weights.
     """
     # Load training images and tagets into numpy array obejct.
+    print('loading', len(files), 'images')
     images = []
     for i in range(len(files)):
         images.append(prepare_image(files[i]))
+        if i % int((len(files)/20) + 1) == 0:
+            print(i, 'images loaded')
     images = np.array(images)
     targets = np.array(targets)
 
@@ -280,7 +283,7 @@ def main():
 
     for layer in model.layers[19:]:
         layer.trainable = True
-    
+
     data = create_dataframe(files, entire, endearly)
     files = data.iloc[:,0]
     targets = data.iloc[:,1]
