@@ -18,7 +18,7 @@ from glob import glob
 import numpy as np
 import pandas as pd
 import mtcnn
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 
 def prepare_frame(files, use_actual_path=True, use_full_folder=None, endearly=None):
     """ Prepare the data for dataframe.
@@ -116,7 +116,7 @@ def prepare_frame(files, use_actual_path=True, use_full_folder=None, endearly=No
         # -------remove in future versions--------
 
     ratingsdict = get_avg_ratings(ratingsdict)
-    print(len(ratingsdict.keys()), 'images found')
+    print('FOUND', len(ratingsdict.keys()), 'IMAGES')
     return ratingsdict
 
 
@@ -156,14 +156,14 @@ def create_dataframe(files, use_full_folder=False, endearly=None):
     ratingframe = pd.DataFrame(list(ratingsdict.items()))
     return ratingframe
 
-def prepare_image(file):
+def prepare_image(file, target_size=(224,224)):
     """ Prepare image to train model with.
     
     The image will be resized to size 224x224 and preprocessed
     using keras and numpy functions.
     """
     try:
-        prepared = image.load_img(file, target_size=(224, 224))
+        prepared = image.load_img(file, target_size=target_size)
         prepared = image.img_to_array(prepared)
         prepared = np.expand_dims(prepared, axis=0)
         prepared = preprocess_input(prepared)
@@ -171,9 +171,9 @@ def prepare_image(file):
         raise ValueError
     return prepared[0]
 
-def create_model(neurons=224, activation='sigmoid'):
+def create_model(neurons=224, target_size=(224,224), activation='sigmoid'):
     """ Create the transfer learning model. """
-    base_model = VGGFace(include_top=False, input_shape=(224, 224, 3))
+    base_model = VGGFace(include_top=False, input_shape=(target_size[0], target_size[1], 3))
     x = base_model.output
     x = GlobalAveragePooling2D()(x)
     x=Dense(neurons,activation='relu')(x)
@@ -196,6 +196,7 @@ def train_model(model, modelname, files, targets, epochs=20, batch_size=32, save
         images.append(prepare_image(files[i]))
         if i % int((len(files)/20) + 1) == 0:
             print(i, 'images loaded')
+    print('loading finisehd with', len(images), 'images')
     images = np.array(images)
     targets = np.array(targets)
 
@@ -234,24 +235,34 @@ def test_on_batch(model, files):
         batch.append(prepare_image(file))
     batch = np.array(batch)
     preds = model.predict_on_batch(batch)
-
     return preds
 
-def visualize_results(files, predictions):
-    for file in files:
-        file = Image.open(file)
-        # add prediciton as text to image
-        # save image in list of all images
-        # return the list
+def visualize_result(file, prediction, ground_truth=None):
+    """ Save the file with its prediction as an image.
+
+    file: the pathname to the image
+    prediction: the prediction of the image
+    ground_truth: if given also add the ground truth
+    """
+    image = Image.open(file)
+    drawtext = ImageDraw.Draw(image)
+    if ground_truth:
+        drawtext.text((0,0), str(round(prediction[0], 2)) + "\n" + str(ground_truth), (255,255,255))
+    else:
+        drawtext.text((0,0), str(round(prediction[0], 2)), (255,255,255))
+    savepath = os.path.join('predicted', os.path.basename(file))
+    image.save(savepath)
 
 def main():
     #try:
     parser = argparse.ArgumentParser(description='files need to be the rating files')
     parser.add_argument("-f", "--files", nargs='*', required=True)
     parser.add_argument("--number", type=int, nargs=1)
-    parser.add_argument("--entire_folder", action='store_true')
+    parser.add_argument("--entirefolder", action='store_true')
     parser.add_argument("-t", "--train", action='store_true')
     parser.add_argument("-e", "--epochs", type=int, nargs=1)
+    parser.add_argument("-w", "--weights", type=str, nargs=1)
+    parser.add_argument("-b", "--batchsize", type=int, nargs=1)
     args = parser.parse_args(sys.argv[1:])
     modelname = datetime.datetime.now().strftime("%I%M%p%B%d%Y")
 
@@ -259,23 +270,24 @@ def main():
         endearly = args.number[0]
     except Exception:
         endearly = None
-    if args.entire_folder:
+    if args.entirefolder:
         entire = True
     else:
         entire = False
+    if args.batchsize:
+        batch_size = args.batchsize[0]
+    else:
+        batch_size = 20
 
     files = args.files
 
     if args.train:
         train = args.train
+    elif args.weights:
+        weights = args.weights[0]
+        train = False
     else:
-        print('-t is required')
-        quit()
-    if train:
-        epochs = args.epochs[0]
-        print('training for', epochs, 'epochs')
-    else:
-        print('inference mode')
+        print('-t or -w is required')
 
     model = create_model()
     for layer in model.layers:
@@ -289,14 +301,19 @@ def main():
     targets = data.iloc[:,1]
 
     if train:
-        model = train_model(model, modelname, files, targets, epochs=epochs, batch_size=20)
+        print('MODE: TRAIN')
+        epochs = args.epochs[0]
+        print('TRAINING FOR', epochs, 'EPOCHS')
+        model = train_model(model, modelname, files, targets, epochs=epochs, batch_size=batch_size)
     else:
-        model.load_weights("first_try.h5")
+        print('MODE: INFERENCE')
+        print('LOADING WEIGHTS:', weights)
+        model.load_weights(weights)
 
     predictions = test_on_batch(model, files)
     
     for i in range(len(predictions)):
-        print(files[i], predictions[i]*9+1, data.iloc[i,1])
+        visualize_result(files[i], predictions[i]*9+1)
 
 if __name__ == "__main__":
     main()
