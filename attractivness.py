@@ -243,7 +243,7 @@ def main():
     parser = argparse.ArgumentParser(description='files need to be the rating files')
     parser.add_argument("-f", "--files", nargs='*', required=True)
     parser.add_argument("--number", type=int, nargs=1)
-    parser.add_argument("--entire_folder", nargs=1)
+    parser.add_argument("--entire_folder", action='store_true')
     parser.add_argument("-t", "--train", action='store_true')
     parser.add_argument("-e", "--epochs", type=int, nargs=1)
     args = parser.parse_args(sys.argv[1:])
@@ -253,9 +253,9 @@ def main():
         endearly = args.number[0]
     except Exception:
         endearly = None
-    try:
-        entire = args.entire_folder[0]
-    except Exception as e:
+    if args.entire_folder:
+        entire = True
+    else:
         entire = False
 
     files = args.files
