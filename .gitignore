@@ -5,3 +5,4 @@
 ratings.csv
 weights/*
 logs/*
+predicted/
