@@ -195,13 +195,14 @@ def train_model(model, modelname, files, targets, epochs=20, batch_size=32, save
     targets = np.array(targets)
 
     model.compile(optimizer='Adam', loss='mse')
-    filepath = os.path.join(modelname + 'weights.{epoch:02d}.hdf5')
+    modelpath = os.path.join('logs', modelname)
+    filepath = os.path.join(modelpath, 'weights.{epoch:02d}.hdf5')
     checkpoints = []
     checkpoints.append(ModelCheckpoint(filepath, monitor='val_loss', verbose=0, save_best_only=save_best_only,
         save_weights_only=True, mode='auto', period=1))
-    checkpoints.append(TensorBoard(log_dir=modelname, histogram_freq=0, batch_size=batch_size,
+    checkpoints.append(TensorBoard(log_dir=modelpath, histogram_freq=0, batch_size=batch_size,
         write_graph=True, write_grads=False, write_images=False, embeddings_freq=0, embeddings_layer_names=None,
-        embeddings_metadata=None, embeddings_data=None, update_freq='epoch')
+        embeddings_metadata=None, embeddings_data=None, update_freq='epoch'))
 
     model.fit(images, targets, validation_split=0.25, callbacks=checkpoints, epochs=epochs, batch_size=batch_size, shuffle=True)
     return model
@@ -238,18 +239,16 @@ def visualize_results(files, predictions):
         # save image in list of all images
         # return the list
 
-
 def main():
     #try:
     parser = argparse.ArgumentParser(description='files need to be the rating files')
     parser.add_argument("-f", "--files", nargs='*', required=True)
     parser.add_argument("--number", type=int, nargs=1)
     parser.add_argument("--entire_folder", nargs=1)
-    parser.add_argument("--train", nargs=1)
+    parser.add_argument("-t", "--train", action='store_true')
+    parser.add_argument("-e", "--epochs", type=int, nargs=1)
     args = parser.parse_args(sys.argv[1:])
-    #except Exception:
-    #    print(Exception)
-    model_name = datetime.datetime.now().strftime("%I%M%p%B%d%Y")
+    modelname = datetime.datetime.now().strftime("%I%M%p%B%d%Y")
 
     try:
         endearly = args.number[0]
@@ -262,8 +261,16 @@ def main():
 
     files = args.files
 
-    train = args.train
-    name = "first_try"
+    if args.train:
+        train = args.train
+    else:
+        print('-t is required')
+        quit()
+    if train:
+        epochs = args.epochs[0]
+        print('training for', epochs, 'epochs')
+    else:
+        print('inference mode')
 
     model = create_model()
     for layer in model.layers:
@@ -277,9 +284,7 @@ def main():
     targets = data.iloc[:,1]
 
     if train:
-        model = train_model(model, modelname, files, targets, save_best_only=name, epochs=1, batch_size=20)
-        #model.save_weights(os.path.normpath(os.path.join(
-        #    os.getcwd(), 'weights/' + name + '.h5')))
+        model = train_model(model, modelname, files, targets, epochs=epochs, batch_size=20)
     else:
         model.load_weights("first_try.h5")
 
