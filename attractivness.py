@@ -256,9 +256,9 @@ def visualize_result(file, prediction, ground_truth=None):
     image = Image.open(file)
     drawtext = ImageDraw.Draw(image)
     if ground_truth:
-        drawtext.text((0,0), str(round(prediction[0], 2)) + "\n" + str(ground_truth), (255,255,255))
+        drawtext.text((0,0), str(round(prediction[0], 2)) + "\n" + str(ground_truth), (165,82,255))
     else:
-        drawtext.text((0,0), str(round(prediction[0], 2)), (255,255,255))
+        drawtext.text((0,0), str(round(prediction[0], 2)), (165,82,255))
     savepath = os.path.join('predicted', os.path.basename(file))
     image.save(savepath)
 
