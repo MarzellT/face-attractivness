@@ -3,6 +3,7 @@ import datetime
 import glob
 import argparse
 import sys
+import random
 import keras
 import keras_vggface
 from pathlib import Path, PureWindowsPath
@@ -238,10 +239,12 @@ def save_model(model, file):
 def test_on_batch(model, files):
     """ Test model on files in dir or pass through list. """
     batch = []
-    if isinstance(files, str):
-        files = get_files_in_dir(files)
-    for file in files:
+    if files[0][-3:] == 'csv':
         batch.append(prepare_image(file))
+    for file in files:
+        for file in files:
+            file = os.path.join(file, random.choice(os.listdir(file)))
+            batch.append(prepare_image(file))
     batch = np.array(batch)
     preds = model.predict_on_batch(batch)
     return preds
@@ -310,11 +313,10 @@ def main():
     for layer in model.layers[19:]:
         layer.trainable = True
 
-    data = create_dataframe(files, entire, endearly)
-    files = data.iloc[:,0]
-    targets = data.iloc[:,1]
-
     if train:
+        data = create_dataframe(files, entire, endearly)
+        files = data.iloc[:,0]
+        targets = data.iloc[:,1]
         print('MODE: TRAIN')
         epochs = args.epochs[0]
         print('TRAINING FOR', epochs, 'EPOCHS')
@@ -324,6 +326,7 @@ def main():
         print('LOADING WEIGHTS:', weights)
         model.load_weights(weights)
 
+        print('PREDICTING')
         predictions = test_on_batch(model, files)
         
         for i in range(len(predictions)):
