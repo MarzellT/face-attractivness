@@ -183,26 +183,35 @@ def create_model(neurons=224, target_size=(224,224), activation='sigmoid'):
     model=Model(inputs=base_model.input,outputs=preds)
     return model
 
-def train_model(model, modelname, files, targets, epochs=20, batch_size=32, save_best_only=None):
+def train_model(model, weights, modelname, files, targets, epochs=20, batch_size=32, save_best_only=None):
     """ Return trained model and train history.
 
     Trains a model for given data and optionally epochs. 
-    If save_best_only is set will only save the best weights.
+    model: kerasmodel to train on
+    weights: filename of the weights to load and train on
+    modelname: name to save the folder of the weights
+    files: image file names
+    targets: rating target
+    epochs: number of epochs
+    batch_size: keras batch_size
+    save_best_only: if true only the best weights will be saved.
     """
     # Load training images and tagets into numpy array obejct.
-    print('loading', len(files), 'images')
+    print('LOADING', len(files), 'IMAGES')
     images = []
     for i in range(len(files)):
         images.append(prepare_image(files[i]))
         if i % int((len(files)/20) + 1) == 0:
-            print(i, 'images loaded')
-    print('loading finisehd with', len(images), 'images')
+            print(i, 'IMAGES LOADED')
+    print('LOADING FINISHED WITH', len(images), 'IMAGES')
     images = np.array(images)
     targets = np.array(targets)
 
     model.compile(optimizer='Adam', loss='mse')
+    if weights:
+        model.load_weights(weights)
     modelpath = os.path.join('logs', modelname)
-    filepath = os.path.join(modelpath, 'weights.{epoch:02d}.hdf5')
+    filepath = os.path.join(modelpath, 'epoch{epoch:02d}.hdf5')
     checkpoints = []
     checkpoints.append(ModelCheckpoint(filepath, monitor='val_loss', verbose=0, save_best_only=save_best_only,
         save_weights_only=True, mode='auto', period=1))
@@ -257,7 +266,7 @@ def main():
     #try:
     parser = argparse.ArgumentParser(description='files need to be the rating files')
     parser.add_argument("-f", "--files", nargs='*', required=True)
-    parser.add_argument("--number", type=int, nargs=1)
+    parser.add_argument("-n", "--number", type=int, nargs=1)
     parser.add_argument("--entirefolder", action='store_true')
     parser.add_argument("-t", "--train", action='store_true')
     parser.add_argument("-e", "--epochs", type=int, nargs=1)
@@ -281,8 +290,12 @@ def main():
 
     files = args.files
 
-    if args.train:
+    if args.train and args.weights:
         train = args.train
+        weights = args.weights[0]
+    elif args.train:
+        train = args.train
+        weights = None
     elif args.weights:
         weights = args.weights[0]
         train = False
@@ -304,7 +317,7 @@ def main():
         print('MODE: TRAIN')
         epochs = args.epochs[0]
         print('TRAINING FOR', epochs, 'EPOCHS')
-        model = train_model(model, modelname, files, targets, epochs=epochs, batch_size=batch_size)
+        model = train_model(model, weights=weights, modelname=modelname, files=files, targets=targets, epochs=epochs, batch_size=batch_size)
     else:
         print('MODE: INFERENCE')
         print('LOADING WEIGHTS:', weights)
