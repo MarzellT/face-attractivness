@@ -241,7 +241,7 @@ def test_on_batch(model, files):
     batch = []
     if files[0][-3:] == 'csv':
         batch.append(prepare_image(file))
-    for file in files:
+    else:
         for file in files:
             file = os.path.join(file, random.choice(os.listdir(file)))
             batch.append(prepare_image(file))
