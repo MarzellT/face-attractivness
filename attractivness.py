@@ -273,17 +273,17 @@ def main():
     parser.add_argument("-w", "--weights", type=str, nargs=1)
     parser.add_argument("-b", "--batchsize", type=int, nargs=1)
     args = parser.parse_args(sys.argv[1:])
-    modelname = datetime.datetime.now().strftime("%I%M%p%B%d%Y")
+    modelname = datetime.datetime.now().strftime("%d%m%Y%M%H")
 
     try:
         endearly = args.number[0]
         entire = True
     except Exception:
         endearly = None
-    if args.entirefolder:
-        entire = True
-    else:
-        entire = False
+        if args.entirefolder:
+            entire = True
+        else:
+            entire = False
     if args.batchsize:
         batch_size = args.batchsize[0]
     else:
