@@ -245,20 +245,21 @@ def test_on_batch(model, files):
     preds = model.predict_on_batch(batch)
     return preds
 
-def visualize_result(file, prediction, ground_truth=None):
+def visualize_result(file, prediction, ground_truth=None, color=(255,255,255)):
     """ Save the file with its prediction as an image.
 
     file: the pathname to the image
     prediction: the prediction of the image
     ground_truth: if given also add the ground truth
+    color: tuple of rgb color
     """
     image = Image.open(file)
     drawtext = ImageDraw.Draw(image)
     font = ImageFont.truetype("NotoMono-Regular.ttf", 30)
     if ground_truth:
-        drawtext.text((0,0), str(round(prediction[0], 2)) + "\n" + str(ground_truth), (165,82,255), font=font)
+        drawtext.text((0,0), str(round(prediction[0], 2)) + "\n" + str(ground_truth), color, font=font)
     else:
-        drawtext.text((0,0), str(round(prediction[0], 2)), (0,255,255), font=font)
+        drawtext.text((0,0), str(round(prediction[0], 2)), color, font=font)
     savepath = os.path.join('predicted', os.path.basename(file))
     image.save(savepath)
 
@@ -329,7 +330,7 @@ def main():
         predictions = test_on_batch(model, files)
         
         for i in range(len(predictions)):
-            visualize_result(files[i], predictions[i]*9+1)
+            visualize_result(files[i], predictions[i]*9+1, color=(255,255,0))
 
 if __name__ == "__main__":
     main()
