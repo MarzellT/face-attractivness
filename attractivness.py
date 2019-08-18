@@ -273,7 +273,7 @@ def main():
     parser.add_argument("-w", "--weights", type=str, nargs=1)
     parser.add_argument("-b", "--batchsize", type=int, nargs=1)
     args = parser.parse_args(sys.argv[1:])
-    modelname = datetime.datetime.now().strftime("%d%m%Y%M%H")
+    modelname = datetime.datetime.now().strftime("%d%m%Y%H%M")
 
     try:
         endearly = args.number[0]
