@@ -237,14 +237,10 @@ def save_model(model, file):
         f.write(model.to_json())
 
 def test_on_batch(model, files):
-    """ Test model on files in dir or pass through list. """
+    """ Test model on files passed as list. """
     batch = []
-    if files[0][-3:] == 'csv':
+    for file in files:
         batch.append(prepare_image(file))
-    else:
-        for file in files:
-            file = os.path.join(file, random.choice(os.listdir(file)))
-            batch.append(prepare_image(file))
     batch = np.array(batch)
     preds = model.predict_on_batch(batch)
     return preds
@@ -258,10 +254,11 @@ def visualize_result(file, prediction, ground_truth=None):
     """
     image = Image.open(file)
     drawtext = ImageDraw.Draw(image)
+    font = ImageFont.truetype("NotoMono-Regular.ttf", 30)
     if ground_truth:
-        drawtext.text((0,0), str(round(prediction[0], 2)) + "\n" + str(ground_truth), (165,82,255))
+        drawtext.text((0,0), str(round(prediction[0], 2)) + "\n" + str(ground_truth), (165,82,255), font=font)
     else:
-        drawtext.text((0,0), str(round(prediction[0], 2)), (165,82,255))
+        drawtext.text((0,0), str(round(prediction[0], 2)), (0,255,255), font=font)
     savepath = os.path.join('predicted', os.path.basename(file))
     image.save(savepath)
 
@@ -325,7 +322,9 @@ def main():
         print('MODE: INFERENCE')
         print('LOADING WEIGHTS:', weights)
         model.load_weights(weights)
-
+        for i in range(len(files)):
+            if os.path.isdir(files[i]):
+                files[i] = os.path.join(files[i], random.choice(os.listdir(files[i])))
         print('PREDICTING')
         predictions = test_on_batch(model, files)
         
