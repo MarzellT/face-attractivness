@@ -277,6 +277,7 @@ def main():
 
     try:
         endearly = args.number[0]
+        entire = True
     except Exception:
         endearly = None
     if args.entirefolder:
