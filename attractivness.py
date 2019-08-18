@@ -76,7 +76,7 @@ def prepare_frame(files, use_actual_path=True, use_full_folder=None, endearly=No
                     for num, filename in enumerate(os.listdir(curdir)):
                         imagefile = os.path.join(curdir, filename)
                         ratingsdict = add_to_dict(imagefile, dirrating, ratingsdict)
-                        if num >= endearly and not (endearly == False):
+                        if num > endearly and not (endearly == False):
                             break
                 except Exception as e:
                     print(e, 'at:', os.path.join(basefoldername, curdir))
@@ -324,10 +324,10 @@ def main():
         print('LOADING WEIGHTS:', weights)
         model.load_weights(weights)
 
-    predictions = test_on_batch(model, files)
-    
-    for i in range(len(predictions)):
-        visualize_result(files[i], predictions[i]*9+1)
+        predictions = test_on_batch(model, files)
+        
+        for i in range(len(predictions)):
+            visualize_result(files[i], predictions[i]*9+1)
 
 if __name__ == "__main__":
     main()
