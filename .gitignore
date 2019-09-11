@@ -6,4 +6,4 @@ ratings.csv
 weights/*
 logs/*
 predicted/
-data/private/
+data/priv/
