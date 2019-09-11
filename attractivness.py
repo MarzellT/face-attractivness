@@ -8,7 +8,7 @@ import keras
 import keras_vggface
 from pathlib import Path, PureWindowsPath
 from keras.preprocessing import image
-from keras.layers import Dense,GlobalAveragePooling2D
+from keras.layers import Dense,GlobalAveragePooling2D, Activation
 from keras.models import Model, model_from_json
 from keras_vggface.vggface import VGGFace
 from keras_vggface.utils import preprocess_input
@@ -84,37 +84,6 @@ def prepare_frame(files, use_actual_path=True, use_full_folder=None, endearly=No
             else:
                 imagefile = os.path.join(curdir, filename)
                 ratingsdict = add_to_dict(imagefile, dirrating, ratingsdict)
-        # ------OLD-------
-        #
-        # check if image already in list and if not append to with ratings as list
-        # so that we can calculate the average
-        #for j in range(len(dirs)):
-        #    if use_actual_path:
-        #        dirs[j] = PureWindowsPath(dirs[j][:i-1] + filenames[j][i:])
-        #        dirs[j] = Path(dirs[j])
-        #        imagefile = dirs[j]
-        #        ratingsdict = add_to_dict(imagefile, ratings[j], ratingsdict)
-        #    else:
-        #        dirs[j] = PureWindowsPath(dirs[j][:i-1])
-        #        dirs[j] = Path(dirs[j])
-        #        if use_full_folder:
-        #            filename = os.path.basename(dirs[j])
-        #            basefoldername = os.path.dirname(os.path.dirname(dirs[j]))
-        #            basefoldername = os.path.join(basefoldername, 'test')
-        #            for imagefolder in os.listdir(basefoldername):
-        #                try:
-        #                    for filename in os.listdir(os.path.join(basefoldername, imagefolder)):
-        #                        fullfilename = os.path.join(imagefolder, filename)
-        #                        imagefile = os.path.join(basefoldername, fullfilename)
-        #                        ratingsdict = add_to_dict(imagefile, ratings[j], ratingsdict)
-        #                except Exception:
-        #                    print('error:', os.path.join(basefoldername, imagefolder))
-        #            continue
-        #        filenames[j] = filenames[j][i:]
-        #        imagefile = os.path.join(dirs[j], filenames[j])
-        #        print("wird ausgeführt")
-        #        ratingsdict = add_to_dict(imagefile, ratings[j], ratingsdict)
-        # -------remove in future versions--------
 
     ratingsdict = get_avg_ratings(ratingsdict)
     print('FOUND', len(ratingsdict.keys()), 'IMAGES')
@@ -177,11 +146,11 @@ def create_model(neurons=224, target_size=(224,224), activation='sigmoid'):
     base_model = VGGFace(include_top=False, input_shape=(target_size[0], target_size[1], 3))
     x = base_model.output
     x = GlobalAveragePooling2D()(x)
-    x=Dense(neurons,activation='relu')(x)
+    x = Dense(neurons,activation='relu')(x)
     #final layer
-    preds=Dense(1,activation=activation)(x)
+    preds = Dense(1, activation=activation)(x)
 
-    model=Model(inputs=base_model.input,outputs=preds)
+    model = Model(inputs=base_model.input,outputs=preds)
     return model
 
 def train_model(model, weights, modelname, files, targets, epochs=20, batch_size=32, save_best_only=None):
@@ -199,6 +168,7 @@ def train_model(model, weights, modelname, files, targets, epochs=20, batch_size
     """
     # Load training images and tagets into numpy array obejct.
     print('LOADING', len(files), 'IMAGES')
+    print(files)
     images = []
     for i in range(len(files)):
         images.append(prepare_image(files[i]))
@@ -305,6 +275,7 @@ def main():
         print('-t or -w is required')
 
     model = create_model()
+
     for layer in model.layers:
         layer.trainable = False
 

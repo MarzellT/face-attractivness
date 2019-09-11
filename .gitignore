@@ -7,3 +7,6 @@ weights/*
 logs/*
 predicted/
 data/priv/
+data/train/
+data/raten/*
+*__pycache__*
