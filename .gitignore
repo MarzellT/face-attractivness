@@ -9,4 +9,4 @@ predicted/
 data/priv/
 data/train/
 data/raten/*
-*__pycache__*
+*.pyc
