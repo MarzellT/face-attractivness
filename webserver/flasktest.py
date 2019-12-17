@@ -34,9 +34,9 @@ def home():
     else:
         return render_template('index.html')
 
-    image = np.array([attractivness.prepare_image(file)])
+    encodings, locations = attractivness.prepare_image(file)
     with graph.as_default():
-        pred = model.predict(image)[0]
+        pred = model.test_on_batch(encodings)
     output = attractivness.visualize_result(file, pred*9+1, fontsize=round(
         Image.open(file).size[0]/8))
 

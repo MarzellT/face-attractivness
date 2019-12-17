@@ -6,6 +6,7 @@ import sys
 import random
 import keras
 import keras_vggface
+import face_recognition
 from pathlib import Path, PureWindowsPath
 from keras.preprocessing import image
 from keras.layers import Dense,GlobalAveragePooling2D, Activation
@@ -21,7 +22,8 @@ import pandas as pd
 import mtcnn
 from PIL import Image, ImageDraw, ImageFont
 
-def prepare_frame(files, use_actual_path=True, use_full_folder=None, endearly=None):
+def prepare_frame(files, use_actual_path=True, use_full_folder=None,
+        endearly=None):
     """ Prepare the data for dataframe.
     
     Create 2 lists one containing the file locations and the other
@@ -57,7 +59,8 @@ def prepare_frame(files, use_actual_path=True, use_full_folder=None, endearly=No
 
         for j in range(len(dirs)):
             # setup path
-            # i figured this weird way is needed for this to work in windows (not tested though)
+            # I figured this weird way is needed for this to work in windows 
+            # (not tested though)
             filename = dirs[j][i:]
             dirs[j] = PureWindowsPath(dirs[j][:i-1])
             dirs[j] = Path(dirs[j])
@@ -71,12 +74,13 @@ def prepare_frame(files, use_actual_path=True, use_full_folder=None, endearly=No
             fncnt.append(curdir)
             if use_full_folder:
                 try:
-                    # here we take every image of the folder and assign the rating of
-                    # the one rated picture to all based on assumption described in the
-                    # README file
+                    # here we take every image of the folder and assign the 
+                    # rating of the one rated picture to all based on assumption
+                    # described in the README file
                     for num, filename in enumerate(os.listdir(curdir)):
                         imagefile = os.path.join(curdir, filename)
-                        ratingsdict = add_to_dict(imagefile, dirrating, ratingsdict)
+                        ratingsdict = add_to_dict(imagefile, dirrating,
+                                ratingsdict)
                         if num > endearly and not (endearly == False):
                             break
                 except Exception as e:
@@ -121,29 +125,42 @@ def get_avg_ratings(ratingsdict):
     return ratingsdict
 
 def create_dataframe(files, use_full_folder=False, endearly=None):
-    """ Create the dataframe containing the info about the images and ratings. """
-    ratingsdict = prepare_frame(files, use_full_folder=use_full_folder, endearly=endearly)
+    """ Create the dataframe containing info about the images and ratings. """
+    ratingsdict = prepare_frame(files, use_full_folder=use_full_folder,
+            endearly=endearly)
     ratingframe = pd.DataFrame(list(ratingsdict.items()))
     return ratingframe
 
-def prepare_image(file, target_size=(224,224)):
-    """ Prepare image to train model with.
+def prepare_image(file, target_size=None,
+        first_only=False):
+    """ Return face encodings of image of file as list or single item
     
-    The image will be resized to size 224x224 and preprocessed
-    using keras and numpy functions.
+    file: filename of image file.
+    target_size: not really needed anymore but should improve speed
+                    reduces the size of the loaded image to tuple.
+    first_only: if True only return the first detected face encodings
+    Use face_recognition library to detect face locations.
+    Take the first found face and generate encodings.
     """
     try:
-        prepared = image.load_img(file, target_size=target_size)
-        prepared = image.img_to_array(prepared)
-        prepared = np.expand_dims(prepared, axis=0)
-        prepared = preprocess_input(prepared)
-    except Exception:
-        raise ValueError
-    return prepared[0]
+        image = Image.open(file)
+        if target_size:
+            image = Image.resize(target_size)
+        image = np.array(image)
+        locations = face_recognition.face_locations(image)
+        encodings = []
+        for loc in locations:
+            encodings.append(face_recognition.face_encodings)
+            break
+    if first_only:
+        return encodings[0]
+    else:
+        return encodings, locations
 
-def create_model(neurons=224, target_size=(224,224), activation='sigmoid'):
+def create_model(neurons=224, target_size=(128), activation='sigmoid'):
     """ Create the transfer learning model. """
-    base_model = VGGFace(include_top=False, input_shape=(target_size[0], target_size[1], 3))
+    #TODO: change the model to work with 128 face embedding vectors
+    base_model = VGGFace(include_top=False, input_shape=(target_size))
     x = base_model.output
     x = GlobalAveragePooling2D()(x)
     x = Dense(neurons,activation='relu')(x)
@@ -153,7 +170,8 @@ def create_model(neurons=224, target_size=(224,224), activation='sigmoid'):
     model = Model(inputs=base_model.input,outputs=preds)
     return model
 
-def train_model(model, weights, modelname, files, targets, epochs=20, batch_size=32, save_best_only=None):
+def train_model(model, weights, modelname, files, targets, epochs=20,
+        batch_size=32, save_best_only=None):
     """ Return trained model and train history.
 
     Trains a model for given data and optionally epochs. 
@@ -169,13 +187,13 @@ def train_model(model, weights, modelname, files, targets, epochs=20, batch_size
     # Load training images and tagets into numpy array obejct.
     print('LOADING', len(files), 'IMAGES')
     print(files)
-    images = []
+    vectors = []
     for i in range(len(files)):
-        images.append(prepare_image(files[i]))
+        vectors.append(prepare_image(files[i], first_only=True))
         if i % int((len(files)/20) + 1) == 0:
             print(i, 'IMAGES LOADED')
-    print('LOADING FINISHED WITH', len(images), 'IMAGES')
-    images = np.array(images)
+    print('LOADING FINISHED WITH', len(vectors), 'IMAGES')
+    vectors = np.array(vectors)
     targets = np.array(targets)
 
     model.compile(optimizer='Adam', loss='mse')
@@ -184,13 +202,16 @@ def train_model(model, weights, modelname, files, targets, epochs=20, batch_size
     modelpath = os.path.join('logs', modelname)
     filepath = os.path.join(modelpath, 'epoch{epoch:02d}.hdf5')
     checkpoints = []
-    checkpoints.append(ModelCheckpoint(filepath, monitor='val_loss', verbose=0, save_best_only=save_best_only,
+    checkpoints.append(ModelCheckpoint(filepath, monitor='val_loss', verbose=0,
+        save_best_only=save_best_only,
         save_weights_only=True, mode='auto', period=1))
-    checkpoints.append(TensorBoard(log_dir=modelpath, histogram_freq=0, batch_size=batch_size,
-        write_graph=True, write_grads=False, write_images=False, embeddings_freq=0, embeddings_layer_names=None,
+    checkpoints.append(TensorBoard(log_dir=modelpath, histogram_freq=0, 
+        batch_size=batch_size, write_graph=True, write_grads=False,
+        write_images=False, embeddings_freq=0, embeddings_layer_names=None,
         embeddings_metadata=None, embeddings_data=None, update_freq='epoch'))
 
-    model.fit(images, targets, validation_split=0.25, callbacks=checkpoints, epochs=epochs, batch_size=batch_size, shuffle=True)
+    model.fit(vectors, targets, validation_split=0.25, callbacks=checkpoints,
+            epochs=epochs, batch_size=batch_size, shuffle=True)
     return model
 
 def load_model(file):
@@ -207,30 +228,45 @@ def save_model(model, file):
         f.write(model.to_json())
 
 def test_on_batch(model, files):
-    """ Test model on files passed as list. """
-    batch = []
-    for file in files:
-        batch.append(prepare_image(file))
-    batch = np.array(batch)
-    preds = model.predict_on_batch(batch)
-    return preds
+    """ Test model on files passed as list.
 
-def visualize_result(file, prediction, ground_truth=None, color=(255,255,255),
+    model: keras model to predict on (maybe change this to self.model
+            or something and make all of this to one class
+    files: file names to predict
+    return a dictionary of shape:
+        predictions[filenames] = {'predictions', 'locations'}
+    """
+    batch = []
+    predictions = {}
+    for file in files:
+        encodings, locations = prepare_image(file)
+        pred = model.predict_on_batch(np.array(encodings))
+        predictions[file] = {
+                'predictions': pred,
+                'locations': locations
+                }
+    return predictions
+
+def visualize_result(predictions, ground_truth=None, color=(255,255,0),
         save=False, fontsize=30):
     """ Save the file with its prediction as an image.
 
-    file: the pathname to the image
-    prediction: the prediction of the image
+    predictions: the predictions from test_on_batch function
     ground_truth: if given also add the ground truth
     color: tuple of rgb color
     """
-    image = Image.open(file)
+    name = list(predictions.keys())[0]
+    image = Image.open(name)
     drawtext = ImageDraw.Draw(image)
     font = ImageFont.truetype("NotoMono-Regular.ttf", fontsize)
     if ground_truth:
-        drawtext.text((0,0), str(round(prediction[0], 2)) + "\n" + str(ground_truth), color, font=font)
+        drawtext.text((0,0), str(round(prediction[0], 2)) 
+                + "\n" + str(ground_truth), color, font=font)
     else:
-        drawtext.text((0,0), str(round(prediction[0], 2)), color, font=font)
+        for locations in predictions[name]['locations']:
+            drawtext.rectangle([locations[i][3],locations[i][0],locations[i][1],locations[i][2]], outline=color)
+            drawtext.text([locations[i][3], locations[i][0]], str(i), fill=color,
+                    font=fnt, stroke_width=2, stroke_fill=(0,0,0))
     if save:
         savepath = os.path.join('predicted', os.path.basename(file))
         image.save(savepath)
@@ -238,7 +274,8 @@ def visualize_result(file, prediction, ground_truth=None, color=(255,255,255),
 
 def main():
     #try:
-    parser = argparse.ArgumentParser(description='files need to be the rating files')
+    parser = argparse.ArgumentParser(description=
+            'files need to be the rating files')
     parser.add_argument("-f", "--files", nargs='*', required=True)
     parser.add_argument("-n", "--number", type=int, nargs=1)
     parser.add_argument("--entirefolder", action='store_true')
@@ -292,19 +329,23 @@ def main():
         print('MODE: TRAIN')
         epochs = args.epochs[0]
         print('TRAINING FOR', epochs, 'EPOCHS')
-        model = train_model(model, weights=weights, modelname=modelname, files=files, targets=targets, epochs=epochs, batch_size=batch_size)
+        model = train_model(model, weights=weights, modelname=modelname, 
+                files=files, targets=targets, epochs=epochs,
+                batch_size=batch_size)
     else:
         print('MODE: INFERENCE')
         print('LOADING WEIGHTS:', weights)
         model.load_weights(weights)
         for i in range(len(files)):
             if os.path.isdir(files[i]):
-                files[i] = os.path.join(files[i], random.choice(os.listdir(files[i])))
+                files[i] = os.path.join(files[i],
+                        random.choice(os.listdir(files[i])))
         print('PREDICTING')
         predictions = test_on_batch(model, files)
         
         for i in range(len(predictions)):
-            visualize_result(files[i], predictions[i]*9+1, color=(255,255,0), save=True)
+            visualize_result(files[i], predictions[i]*9+1, color=(255,255,0),
+                    save=True)
 
 if __name__ == "__main__":
     main()
