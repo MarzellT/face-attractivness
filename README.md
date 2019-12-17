@@ -64,9 +64,10 @@ To run choices.py you must enter `choices.py arg1 args`.
 `arg1` is the amount of pictures you want and args are the folders in which your pictures are.    
  
 # Todo
+- Change model completly to predict on face_recognition 128 encodings
 Assumption: I can assume that the score of one picture of one person generalises to all pictures of this person.    
 I can use this assumption to train on all images of that person to have more train data.     
-- Implement training based on this assumption.    
+- Implement training based on this assumption.    (check if this is done)
     
 Idea: I want to save all images and their rating based on above assumption.    
 In my first implementation i saved all images into a list and their ratings into seperate ordered lists.    
